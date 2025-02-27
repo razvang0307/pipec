@@ -18,6 +18,7 @@ enum FACING {
 typedef struct snake {
 	int x, y;
 	enum FACING facing : 2;
+	int color_id;
 }t_snake;
 
 typedef struct charset {

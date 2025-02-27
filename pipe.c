@@ -17,6 +17,7 @@ initialize(int *row, int *col) {
 	halfdelay(1);
 	curs_set(0);
 	srandom(time(NULL));
+	start_color();
 }
 
 int
@@ -35,7 +36,7 @@ main(int argc, char *argv[]) {
 	int row, col;
 	int i;
 	int chance_to_change = 15;
-	int n_snakes = 1;
+	int n_snakes = 10;
 	//start_color();
 	//init_pair(1, COLOR_CYAN, COLOR_BLACK);
 	initialize(&row, &col);
@@ -56,14 +57,23 @@ main(int argc, char *argv[]) {
 	};
 
 	t_snake *snakes = malloc(sizeof(t_snake) * n_snakes);
+	init_pair(0, COLOR_RED, COLOR_BLACK);
+	init_pair(1, COLOR_GREEN, COLOR_BLACK);
+	init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(3, COLOR_BLUE, COLOR_BLACK);
+	init_pair(4, COLOR_MAGENTA, COLOR_BLACK);
+	init_pair(5, COLOR_CYAN, COLOR_BLACK);
+	init_pair(6, COLOR_WHITE, COLOR_BLACK);
 	for (i = 0; i < n_snakes; i++) {
 		snakes[i].y = random() % row;
 		snakes[i].x = random() % col;
 		snakes[i].facing = random() % 4;
+		snakes[i].color_id = random() % 7;
 	}
 
 	getmaxyx(stdscr, row, col);
 	while (!done) {
+		getmaxyx(stdscr, row, col);
 		for (int i = 0; i < n_snakes; i++) {
 			int try_to_change = random() % 100;
 			char symbid = facing_masks[snakes[i].facing];
@@ -72,7 +82,9 @@ main(int argc, char *argv[]) {
 				snakes[i].facing += direction;
 				symbid += direction;
 			}
+			attron(COLOR_PAIR(snakes[i].color_id));
 			mvprintw(snakes[i].y, snakes[i].x, "%lc", symbols[symbid]);
+			attroff(COLOR_PAIR(snakes[i].color_id));
 			snakes[i].y += offsets[snakes[i].facing][Y_OFFSET];
 			clamp(0, row - 1, &snakes[i].y);
 			snakes[i].x += offsets[snakes[i].facing][X_OFFSET];
