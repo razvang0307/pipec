@@ -7,6 +7,7 @@
 
 #define ESCAPE 27
 
+
 void
 initialize_snakes(int row, int col, t_snake *snakes, int n_snakes) {
 	for (int i = 0; i < n_snakes; i++) {
@@ -14,7 +15,7 @@ initialize_snakes(int row, int col, t_snake *snakes, int n_snakes) {
 		snakes[i].x = random() % col;
 		snakes[i].facing = random() % 4;
 		snakes[i].color_id = random() % 7;
-		snakes[i].chars = random() % 2;
+		snakes[i].chars = random() % 3;
 	}
 }
 
@@ -34,7 +35,7 @@ initialize(int *row, int *col, t_snake *snakes, int n_snakes) {
 	initialize_snakes(*row, *col, snakes, n_snakes);
 }
 
-int
+void
 clamp(int min, int max, int *val) {
 	if (*val < min)
 		*val = max;
@@ -84,9 +85,7 @@ int
 main(int argc, char *argv[]) {
 	unsigned char done = 0;
 	unsigned int input = 1;
-	char str[80];
 	int row, col;
-	int i;
 	int chance_to_change = 15;
 	int n_snakes = 1;
 	int last_allocated_snakes = n_snakes;
@@ -95,37 +94,7 @@ main(int argc, char *argv[]) {
 	t_snake *snakes = malloc(sizeof(t_snake) * n_snakes);
 	initialize(&row, &col, snakes, n_snakes);
 
-	int double_ended_pipes[13] = {
-		0x2557,				// RIGHT_TO_DOWN,
-		0x2550,				// RIGHT,
-		0x255D,				// RIGHT_TO_UP,
-		0x2554,				// UP_TO_RIGHT,
-		0x2551,				// UP,
-		0x2557,				// UP_TO_LEFT,
-		0x255A,				// LEFT_TO_UP,
-		0x2550,				// LEFT,
-		0x2554,				// LEFT_TO_DOWN,
-		0x255D,				// DOWN_TO_LEFT,
-		0x2551,				// DOWN,
-		0x255A				// DOWN_TO_RIGHT,
-	};
 	char paused;
-
-	int classic_ascii[13] = {
-		'\\',
-		'-',
-		'/',
-		'/',
-		'|',
-		'\\',
-		'\\',
-		'-',
-		'/',
-		'/',
-		'|',
-		'\\'
-	};
-	int *charsets[] = {double_ended_pipes, classic_ascii};
 
 	init_pair(0, COLOR_RED, COLOR_BLACK);
 	init_pair(1, COLOR_GREEN, COLOR_BLACK);
@@ -152,18 +121,15 @@ main(int argc, char *argv[]) {
 				symbid += direction;
 			}
 			attron(COLOR_PAIR(snakes[i].color_id));
-			mvprintw(snakes[i].y, snakes[i].x, "%lc", charsets[snakes[i].chars][symbid]);
+			mvprintw(snakes[i].y, snakes[i].x, "%lc", charsets[snakes[i].chars][(int)symbid]);
 			attroff(COLOR_PAIR(snakes[i].color_id));
 			snakes[i].y += offsets[snakes[i].facing][Y_OFFSET];
 			clamp(0, row - 1, &snakes[i].y);
 			snakes[i].x += offsets[snakes[i].facing][X_OFFSET];
 			clamp(0, col - 1, &snakes[i].x);
 		}
-		//attron(COLOR_PAIR(1));
-		//attroff(COLOR_PAIR(1));
 	}
 	free(snakes);
 	endwin();
 	return 0;
 }
-#include <string.h>

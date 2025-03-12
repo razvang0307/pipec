@@ -1,7 +1,7 @@
 SRC = pipe.c
 OBJ = ${SRC:.c=.o}
 CC = gcc
-CFLAGS = -g
+CFLAGS = -g -Wall -Werror
 LDFLAGS = -lncursesw
 
 build: pipec
